@@ -59,6 +59,7 @@ class LupinSorter(ComponentsBasedSorter):
         "template_min_snr_ptp": 4.0,
         "template_max_jitter_ms": 0.2,
         "template_matching_engine": "wobble",
+        "template_matching_kwargs": {},
         "min_firing_rate": 0.1,
         "gather_mode": "memory",
         "job_kwargs": {},
@@ -93,6 +94,9 @@ class LupinSorter(ComponentsBasedSorter):
         "template_sparsify_threshold": "Threshold to sparsify templates before template matching",
         "template_min_snr_ptp": "Threshold to remove templates before template matching",
         "template_max_jitter_ms": "Threshold on jitters to remove templates before template matching",
+        "template_matching_kwargs": (
+            'Options for template matching. For Wobble on CUDA or ROCm, use dict(engine="torch", torch_device="cuda").'
+        ),
         "min_firing_rate": "To remove small cluster in size before template matching",
         "gather_mode": "How to accumalte spike in matching : memory/npy",
         "job_kwargs": "The famous and fabulous job_kwargs",
@@ -389,7 +393,7 @@ class LupinSorter(ComponentsBasedSorter):
             recording,
             templates,
             method=params["template_matching_engine"],
-            method_kwargs={},
+            method_kwargs=(params["template_matching_kwargs"] or {}).copy(),
             pipeline_kwargs=pipeline_kwargs,
             job_kwargs=job_kwargs,
         )
