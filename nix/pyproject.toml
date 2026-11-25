@@ -1,0 +1,43 @@
+[project]
+name = "spikeinterface-nix"
+version = "0.1.0"
+requires-python = "==3.13.*"
+dependencies = ["spikeinterface"]
+
+[project.optional-dependencies]
+lupin = ["spikeinterface[lupin]"]
+nwb = ["pynwb>=2.6.0", "h5py", "remfile"]
+# Selects the branch with no Torch in uv2nix's conflict resolver.
+base = ["spikeinterface"]
+cpu = ["torch"]
+amd = ["torch", "triton-rocm"]
+nvidia = ["torch"]
+
+[tool.uv]
+package = false
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+conflicts = [[{ extra = "base" }, { extra = "cpu" }, { extra = "amd" }, { extra = "nvidia" }]]
+
+[tool.uv.sources]
+spikeinterface = { path = "..", editable = false }
+torch = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-rocm", extra = "amd" },
+    { index = "pytorch-cu128", extra = "nvidia" },
+]
+triton-rocm = [{ index = "pytorch-rocm", extra = "amd" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm7.2"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true

@@ -151,3 +151,4 @@ test_folder/
 .DS_Store
 test_data.json
 uv.lock
+!/nix/uv.lock
